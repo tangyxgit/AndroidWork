@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.post:
                 params.setPostData("你要post的内容".getBytes());
                 mTask.doPost();
+
                 break;
             case R.id.timer:
                 mGetValidate.setEnabled(false);
