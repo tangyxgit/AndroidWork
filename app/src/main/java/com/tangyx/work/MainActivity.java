@@ -1,6 +1,8 @@
 package com.tangyx.work;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.tangyx.work.network.ConnectDataTask;
 import com.tangyx.work.network.HcNetWorkTask;
@@ -21,6 +24,12 @@ import com.tangyx.work.util.SLog;
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener,
         ConnectDataTask.OnResultDataListener{
+
+    /**
+     * 倒计时
+     */
+    private TextView mGetValidate;
+    private int time=60;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +49,31 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onInitView(){
+        mGetValidate = (TextView) findViewById(R.id.timer);
+        mGetValidate.setOnClickListener(this);
         findViewById(R.id.get).setOnClickListener(this);
         findViewById(R.id.post).setOnClickListener(this);
     }
+
+    /**
+     * 启动倒计时
+     */
+    Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if(time>0){
+                time--;
+                mGetValidate.setText(time+" S");
+                handler.postDelayed(this,1000);
+            }else{
+                handler.removeCallbacks(this);
+                mGetValidate.setEnabled(true);
+                mGetValidate.setText("点击我进行倒计时");
+                time = 60;
+            }
+        }
+    };
 
     @Override
     public void onBackPressed() {
@@ -79,6 +110,11 @@ public class MainActivity extends AppCompatActivity
             case R.id.post:
                 params.setPostData("你要post的内容".getBytes());
                 mTask.doPost();
+                break;
+            case R.id.timer:
+                mGetValidate.setEnabled(false);
+                mGetValidate.setText("准备倒计时");
+                handler.postDelayed(runnable, 1000);
                 break;
         }
     }
